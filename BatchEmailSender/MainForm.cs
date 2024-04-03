@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using BatchEmailSender.Models;
 using BatchEmailSender.Properties;
 using BatchEmailSender.Utils;
+using FluentEmail.Core;
 using OfficeOpenXml;
 
 namespace BatchEmailSender;
@@ -24,7 +25,7 @@ public partial class MainForm : Form
     public MainForm()
     {
         InitializeComponent();
-
+        SendMailsToolStripButton.Click += async (sender, e) => await SendMailsToolStripButton_Click(sender, e);
     }
 
     private void SettingsToolStripButton_Click(object sender, EventArgs e)
@@ -88,7 +89,7 @@ public partial class MainForm : Form
             AttachmentTextBox.Text = AttachmentOpenFileDialog.FileName;
     }
 
-    private void SendMailsToolStripButton_Click(object sender, EventArgs e)
+    private async Task SendMailsToolStripButton_Click(object sender, EventArgs e)
     {
         if (string.IsNullOrEmpty(SubjectTextBox.Text))
         {
@@ -111,5 +112,16 @@ public partial class MainForm : Form
             return;
         }
 
+        string body = BodyHtmlEditor.Text;
+
+        foreach (ColumnsModel row in _columnsModel)
+        {
+            await new Email()
+                .To("test@test.test")
+                .Subject("Mailgun example")
+                .Body("Email body")
+                .Tag("tagname") //the Mailgun sender supports tags
+                .SendAsync();
+        }
     }
 }

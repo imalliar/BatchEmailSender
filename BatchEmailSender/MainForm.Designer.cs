@@ -49,10 +49,12 @@
             SubjectLlabel = new Label();
             ExcelTabPage = new TabPage();
             ExcelDataGridView = new DataGridView();
-            ExcelOpenFileDialog = new OpenFileDialog();
-            AttachmentOpenFileDialog = new OpenFileDialog();
             ErrosTabPage = new TabPage();
             ErrorsDataGridView = new DataGridView();
+            ExcelOpenFileDialog = new OpenFileDialog();
+            AttachmentOpenFileDialog = new OpenFileDialog();
+            textBox1 = new TextBox();
+            FromNameLabel = new Label();
             MainToolStrip.SuspendLayout();
             MainTabControl.SuspendLayout();
             EmailTabPage.SuspendLayout();
@@ -100,7 +102,6 @@
             SendMailsToolStripButton.Name = "SendMailsToolStripButton";
             SendMailsToolStripButton.Size = new Size(23, 22);
             SendMailsToolStripButton.Text = "Send Mails";
-            SendMailsToolStripButton.Click += SendMailsToolStripButton_Click;
             // 
             // MainTabControl
             // 
@@ -117,6 +118,8 @@
             // 
             // EmailTabPage
             // 
+            EmailTabPage.Controls.Add(textBox1);
+            EmailTabPage.Controls.Add(FromNameLabel);
             EmailTabPage.Controls.Add(ToComboBox);
             EmailTabPage.Controls.Add(BodyHtmlEditor);
             EmailTabPage.Controls.Add(BrowseAttachmentButton);
@@ -217,11 +220,10 @@
             // 
             // FromTextBox
             // 
-            FromTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             FromTextBox.Location = new Point(58, 48);
             FromTextBox.Margin = new Padding(4, 3, 4, 3);
             FromTextBox.Name = "FromTextBox";
-            FromTextBox.Size = new Size(1000, 23);
+            FromTextBox.Size = new Size(355, 23);
             FromTextBox.TabIndex = 17;
             // 
             // FromLabel
@@ -286,14 +288,6 @@
             ExcelDataGridView.Size = new Size(1062, 448);
             ExcelDataGridView.TabIndex = 0;
             // 
-            // ExcelOpenFileDialog
-            // 
-            ExcelOpenFileDialog.Filter = "Excel Files|*.xlsx|All Files|*.*";
-            // 
-            // AttachmentOpenFileDialog
-            // 
-            AttachmentOpenFileDialog.FileName = "openFileDialog1";
-            // 
             // ErrosTabPage
             // 
             ErrosTabPage.Controls.Add(ErrorsDataGridView);
@@ -313,6 +307,33 @@
             ErrorsDataGridView.Name = "ErrorsDataGridView";
             ErrorsDataGridView.Size = new Size(1062, 448);
             ErrorsDataGridView.TabIndex = 0;
+            // 
+            // ExcelOpenFileDialog
+            // 
+            ExcelOpenFileDialog.Filter = "Excel Files|*.xlsx|All Files|*.*";
+            // 
+            // AttachmentOpenFileDialog
+            // 
+            AttachmentOpenFileDialog.FileName = "openFileDialog1";
+            // 
+            // textBox1
+            // 
+            textBox1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            textBox1.Location = new Point(501, 48);
+            textBox1.Margin = new Padding(4, 3, 4, 3);
+            textBox1.Name = "textBox1";
+            textBox1.Size = new Size(557, 23);
+            textBox1.TabIndex = 27;
+            // 
+            // FromNameLabel
+            // 
+            FromNameLabel.AutoSize = true;
+            FromNameLabel.Location = new Point(423, 51);
+            FromNameLabel.Margin = new Padding(4, 0, 4, 0);
+            FromNameLabel.Name = "FromNameLabel";
+            FromNameLabel.Size = new Size(70, 15);
+            FromNameLabel.TabIndex = 26;
+            FromNameLabel.Text = "From Name";
             // 
             // MainForm
             // 
@@ -362,5 +383,7 @@
         private ToolStripButton SendMailsToolStripButton;
         private TabPage ErrosTabPage;
         private DataGridView ErrorsDataGridView;
+        private TextBox textBox1;
+        private Label FromNameLabel;
     }
 }
