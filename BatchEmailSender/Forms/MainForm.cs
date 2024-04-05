@@ -144,7 +144,8 @@ public partial class MainForm : Form
             FromName = FromNameTextBox.Text,
             Subject = SubjectTextBox.Text,
             To = ToComboBox.Text,
-            ToName = ToNameComboBox.Text
+            ToName = ToNameComboBox.Text,
+            Template = BodyHtmlEditor.Text
         });
         _waitForm.ShowDialog();
         ErrorsDataGridView.DataSource = _errors;
@@ -189,23 +190,13 @@ public partial class MainForm : Form
                 currentToName = row[options.ToName].ToString();
                 if (string.IsNullOrEmpty(currentTo)) continue;
 
-                Dictionary<string, object> model = new Dictionary<string, object>();
-                model["Name"] = "Jack";
-                model["Lastname"] = "Malliaros";
 
-                dynamic m = new ExpandoObject();
-                m.Name = "Jack";
-                m.Lastname = "Mal";
-
-
-                var source = "Hello {{ Name }} {{ Lastname }}";
-
-                if (parser.TryParse(source, out var template, out var error))
+                if (parser.TryParse(options.Template, out var template, out var error))
                 {
 
                     //var context = new TemplateContext();
 
-                    var context = new TemplateContext(model);
+                    var context = new TemplateContext(currentRow);
                     var compiled = template.Render(context);
 
                     var email = new Email()
