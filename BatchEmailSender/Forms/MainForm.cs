@@ -1,7 +1,11 @@
 ﻿using System.ComponentModel;
 using System.Data;
+using System.Dynamic;
 using System.Net.Mail;
+using System.Numerics;
 using System.Reflection.Metadata.Ecma335;
+using System.Runtime.InteropServices.JavaScript;
+using System.Windows.Forms;
 using BatchEmailSender.Extensions;
 using BatchEmailSender.Models;
 using BatchEmailSender.Properties;
@@ -10,7 +14,10 @@ using FluentEmail.Core;
 using FluentEmail.Liquid;
 using FluentEmail.MailKitSmtp;
 using FluentEmail.Smtp;
+using Fluid;
+using Fluid.Values;
 using MailKit.Security;
+using Microsoft.Extensions.FileProviders;
 using Microsoft.Extensions.Options;
 using OfficeOpenXml;
 
@@ -22,19 +29,12 @@ public partial class MainForm : Form
     private readonly List<ColumnsModel> _columnsModel = new();
     private DataTable _excelData = new();
     private List<ErrorModel> _errors = new();
+    private List<SuccessReportModel> _successReports = new();
     private WaitForm? _waitForm = null;
-    private string? _to;
-    private string? _subject;
-    private string? _template;
-    private int _delay;
-    private string _from;
-    private string _fromName;
-
 
     public MainForm()
     {
         InitializeComponent();
-        SendMailsToolStripButton.Click += async (sender, e) => await SendMailsToolStripButton_Click(sender, e);
     }
 
     private void SettingsToolStripButton_Click(object sender, EventArgs e)
@@ -46,6 +46,8 @@ public partial class MainForm : Form
         settings.UserTextBox.Text = Settings.Default.User;
         settings.PasswordTextBox.Text = Settings.Default.Password;
         settings.DelayNumericUpDown.Value = Settings.Default.Delay;
+        settings.RequiresAuthenticationCheckBox.Checked = Settings.Default.RequiresAuthentication;
+        settings.SocketOptionsComboBox.SelectedItem = (SecureSocketOptions)Enum.ToObject(typeof(SecureSocketOptions), Settings.Default.SocketOptions);
 
         if (settings.ShowDialog() == DialogResult.OK)
         {
@@ -55,6 +57,8 @@ public partial class MainForm : Form
             Settings.Default.User = settings.UserTextBox.Text;
             Settings.Default.Password = settings.PasswordTextBox.Text;
             Settings.Default.Delay = (int)settings.DelayNumericUpDown.Value;
+            Settings.Default.RequiresAuthentication = settings.RequiresAuthenticationCheckBox.Checked;
+            Settings.Default.SocketOptions = (int)settings.SocketOptionsComboBox.SelectedValue;
             Settings.Default.Save();
         }
     }
@@ -86,9 +90,13 @@ public partial class MainForm : Form
                 });
             }
 
-            ToComboBox.DataSource = _columnsModel;
+            ToComboBox.DataSource = new BindingList<ColumnsModel>(_columnsModel);
             ToComboBox.ValueMember = nameof(ColumnsModel.Index);
             ToComboBox.DisplayMember = nameof(ColumnsModel.Name);
+
+            ToNameComboBox.DataSource = new BindingList<ColumnsModel>(_columnsModel);
+            ToNameComboBox.ValueMember = nameof(ColumnsModel.Index);
+            ToNameComboBox.DisplayMember = nameof(ColumnsModel.Name);
 
             ExcelDataGridView.DataSource = _excelData;
         }
@@ -100,7 +108,7 @@ public partial class MainForm : Form
             AttachmentTextBox.Text = AttachmentOpenFileDialog.FileName;
     }
 
-    private async Task SendMailsToolStripButton_Click(object sender, EventArgs e)
+    private void SendMailsToolStripButton_Click(object sender, EventArgs e)
     {
         if (string.IsNullOrEmpty(SubjectTextBox.Text))
         {
@@ -130,16 +138,17 @@ public partial class MainForm : Form
         
         _waitForm = new WaitForm(SenderBackgroundWorker, _excelData.Rows.Count);
 
-        _to = ToComboBox.Text;
-        _subject = SubjectTextBox.Text;
-        _template = BodyHtmlEditor.Text;
-        _delay = Settings.Default.Delay;
-        _from = FromTextBox.Text;
-        _fromName = FromNameTextBox.Text;
-
-        SenderBackgroundWorker.RunWorkerAsync();
+        SenderBackgroundWorker.RunWorkerAsync(new SenderWorkerOptions
+        {
+            From = FromTextBox.Text,
+            FromName = FromNameTextBox.Text,
+            Subject = SubjectTextBox.Text,
+            To = ToComboBox.Text,
+            ToName = ToNameComboBox.Text
+        });
         _waitForm.ShowDialog();
         ErrorsDataGridView.DataSource = _errors;
+        SuccessReportDataGridView.DataSource = _successReports;
     }
 
     private void SenderBackgroundWorker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
@@ -149,6 +158,8 @@ public partial class MainForm : Form
 
     private void SenderBackgroundWorker_DoWork(object? sender, DoWorkEventArgs e)
     {
+        SenderWorkerOptions options = e.Argument as SenderWorkerOptions ?? new SenderWorkerOptions();
+
         Email.DefaultSender = new MailKitSender(new SmtpClientOptions
         {
             Password = Settings.Default.Password,
@@ -156,18 +167,17 @@ public partial class MainForm : Form
             Server = Settings.Default.Server,
             User = Settings.Default.User,
             UseSsl = Settings.Default.UseSsl,
-            //RequiresAuthentication = true,
-            SocketOptions = SecureSocketOptions.StartTlsWhenAvailable
+            RequiresAuthentication = Settings.Default.RequiresAuthentication,
+            SocketOptions = (SecureSocketOptions)Enum.ToObject(typeof(SecureSocketOptions), Settings.Default.SocketOptions)
         });
-        Email.From(_from, _fromName);
+        Email.From(options.From, options.FromName);
 
-        var options = new LiquidRendererOptions();
-        Email.DefaultRenderer = new LiquidRenderer(Options.Create(options));
+        var parser = new FluidParser();
         
         IEnumerable<dynamic> rows = _excelData.ToDynamic();
         int progress = 0;
         _errors = new List<ErrorModel>();
-        string? currentTo=null;
+        string? currentTo=null, currentToName = null;
         
         foreach (var currentRow in rows)
         {
@@ -175,21 +185,70 @@ public partial class MainForm : Form
             if (row == null) continue;
             try
             {
-                currentTo = row[_to].ToString();
+                currentTo = row[options.To].ToString();
+                currentToName = row[options.ToName].ToString();
                 if (string.IsNullOrEmpty(currentTo)) continue;
 
-                var email = new Email()
-                    .SetFrom(_from, _fromName)
-                    .To(currentTo)
-                    .Subject(_subject)
-                    .Body("Test body");
-                    //.UsingTemplate(_template, row);
+                Dictionary<string, object> model = new Dictionary<string, object>();
+                model["Name"] = "Jack";
+                model["Lastname"] = "Malliaros";
 
-                var response = email.Send();
+                dynamic m = new ExpandoObject();
+                m.Name = "Jack";
+                m.Lastname = "Mal";
 
-                
-                    
-                Task.Delay(_delay * 1000);
+
+                var source = "Hello {{ Name }} {{ Lastname }}";
+
+                if (parser.TryParse(source, out var template, out var error))
+                {
+
+                    //var context = new TemplateContext();
+
+                    var context = new TemplateContext(model);
+                    var compiled = template.Render(context);
+
+                    var email = new Email()
+                        .SetFrom(options.From, options.FromName)
+                        .To(currentTo, currentToName)
+                        .Subject(options.Subject)
+                        .Body(compiled);
+
+                    var response = email.Send();
+
+                    if (response.Successful)
+                    {
+                        _successReports.Add(new SuccessReportModel
+                        {
+                            Email = currentTo,
+                            EmailName = currentToName,
+                            MessageId = response.MessageId
+                        });
+                    }
+                    else
+                    {
+                        foreach (string message in response.ErrorMessages)
+                        {
+                            _errors.Add(new ErrorModel
+                            {
+                                Email = currentTo,
+                                EmailName = currentToName,
+                                Error = message
+                            });
+                        }
+                    }
+                }
+                else
+                {
+                    _errors.Add(new ErrorModel
+                    {
+                        Email = currentTo,
+                        EmailName = currentToName,
+                        Error = error
+                    });
+                }
+
+                Task.Delay(Settings.Default.Delay * 1000);
                 SenderBackgroundWorker.ReportProgress(++progress);
                 if (SenderBackgroundWorker.CancellationPending) break;
             }
@@ -198,6 +257,7 @@ public partial class MainForm : Form
                 _errors.Add(new ErrorModel
                 {
                     Email = currentTo,
+                    EmailName = currentToName,
                     Error = ex.Message
                 });
             }

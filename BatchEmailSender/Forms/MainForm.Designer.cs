@@ -35,6 +35,8 @@
             SendMailsToolStripButton = new ToolStripButton();
             MainTabControl = new TabControl();
             EmailTabPage = new TabPage();
+            ToNameComboBox = new ComboBox();
+            ToNameLabel = new Label();
             BodyHtmlEditor = new TextBox();
             FromNameTextBox = new TextBox();
             FromNameLabel = new Label();
@@ -52,6 +54,8 @@
             ExcelDataGridView = new DataGridView();
             ErrosTabPage = new TabPage();
             ErrorsDataGridView = new DataGridView();
+            SuccessTabPage = new TabPage();
+            SuccessReportDataGridView = new DataGridView();
             ExcelOpenFileDialog = new OpenFileDialog();
             AttachmentOpenFileDialog = new OpenFileDialog();
             SenderBackgroundWorker = new System.ComponentModel.BackgroundWorker();
@@ -62,6 +66,8 @@
             ((System.ComponentModel.ISupportInitialize)ExcelDataGridView).BeginInit();
             ErrosTabPage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)ErrorsDataGridView).BeginInit();
+            SuccessTabPage.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)SuccessReportDataGridView).BeginInit();
             SuspendLayout();
             // 
             // MainToolStrip
@@ -102,12 +108,14 @@
             SendMailsToolStripButton.Name = "SendMailsToolStripButton";
             SendMailsToolStripButton.Size = new Size(23, 22);
             SendMailsToolStripButton.Text = "Send Mails";
+            SendMailsToolStripButton.Click += SendMailsToolStripButton_Click;
             // 
             // MainTabControl
             // 
             MainTabControl.Controls.Add(EmailTabPage);
             MainTabControl.Controls.Add(ExcelTabPage);
             MainTabControl.Controls.Add(ErrosTabPage);
+            MainTabControl.Controls.Add(SuccessTabPage);
             MainTabControl.Dock = DockStyle.Fill;
             MainTabControl.HotTrack = true;
             MainTabControl.Location = new Point(0, 25);
@@ -118,6 +126,8 @@
             // 
             // EmailTabPage
             // 
+            EmailTabPage.Controls.Add(ToNameComboBox);
+            EmailTabPage.Controls.Add(ToNameLabel);
             EmailTabPage.Controls.Add(BodyHtmlEditor);
             EmailTabPage.Controls.Add(FromNameTextBox);
             EmailTabPage.Controls.Add(FromNameLabel);
@@ -138,6 +148,26 @@
             EmailTabPage.TabIndex = 0;
             EmailTabPage.Text = "Email";
             EmailTabPage.UseVisualStyleBackColor = true;
+            // 
+            // ToNameComboBox
+            // 
+            ToNameComboBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            ToNameComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            ToNameComboBox.FormattingEnabled = true;
+            ToNameComboBox.Location = new Point(501, 77);
+            ToNameComboBox.Name = "ToNameComboBox";
+            ToNameComboBox.Size = new Size(557, 23);
+            ToNameComboBox.TabIndex = 14;
+            // 
+            // ToNameLabel
+            // 
+            ToNameLabel.AutoSize = true;
+            ToNameLabel.Location = new Point(439, 80);
+            ToNameLabel.Margin = new Padding(4, 0, 4, 0);
+            ToNameLabel.Name = "ToNameLabel";
+            ToNameLabel.Size = new Size(54, 15);
+            ToNameLabel.TabIndex = 13;
+            ToNameLabel.Text = "To Name";
             // 
             // BodyHtmlEditor
             // 
@@ -169,12 +199,11 @@
             // 
             // ToComboBox
             // 
-            ToComboBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             ToComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
             ToComboBox.FormattingEnabled = true;
             ToComboBox.Location = new Point(58, 77);
             ToComboBox.Name = "ToComboBox";
-            ToComboBox.Size = new Size(1000, 23);
+            ToComboBox.Size = new Size(355, 23);
             ToComboBox.TabIndex = 7;
             // 
             // BrowseAttachmentButton
@@ -310,6 +339,28 @@
             ErrorsDataGridView.Size = new Size(1062, 448);
             ErrorsDataGridView.TabIndex = 0;
             // 
+            // SuccessTabPage
+            // 
+            SuccessTabPage.Controls.Add(SuccessReportDataGridView);
+            SuccessTabPage.Location = new Point(4, 24);
+            SuccessTabPage.Name = "SuccessTabPage";
+            SuccessTabPage.Padding = new Padding(3);
+            SuccessTabPage.Size = new Size(1068, 454);
+            SuccessTabPage.TabIndex = 3;
+            SuccessTabPage.Text = "Success Report";
+            SuccessTabPage.UseVisualStyleBackColor = true;
+            // 
+            // SuccessReportDataGridView
+            // 
+            SuccessReportDataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            SuccessReportDataGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
+            SuccessReportDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            SuccessReportDataGridView.Dock = DockStyle.Fill;
+            SuccessReportDataGridView.Location = new Point(3, 3);
+            SuccessReportDataGridView.Name = "SuccessReportDataGridView";
+            SuccessReportDataGridView.Size = new Size(1062, 448);
+            SuccessReportDataGridView.TabIndex = 1;
+            // 
             // ExcelOpenFileDialog
             // 
             ExcelOpenFileDialog.Filter = "Excel Files|*.xlsx|All Files|*.*";
@@ -345,6 +396,8 @@
             ((System.ComponentModel.ISupportInitialize)ExcelDataGridView).EndInit();
             ErrosTabPage.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)ErrorsDataGridView).EndInit();
+            SuccessTabPage.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)SuccessReportDataGridView).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -377,5 +430,9 @@
         private Label FromNameLabel;
         private System.ComponentModel.BackgroundWorker SenderBackgroundWorker;
         private TextBox BodyHtmlEditor;
+        private ComboBox ToNameComboBox;
+        private Label ToNameLabel;
+        private TabPage SuccessTabPage;
+        private DataGridView SuccessReportDataGridView;
     }
 }

@@ -41,6 +41,9 @@
             UseSslCheckBox = new CheckBox();
             DelayNumericUpDown = new NumericUpDown();
             DelayLabel = new Label();
+            RequiresAuthenticationCheckBox = new CheckBox();
+            SocketOptionsLabel = new Label();
+            SocketOptionsComboBox = new ComboBox();
             ((System.ComponentModel.ISupportInitialize)PortNumericUpDown).BeginInit();
             ((System.ComponentModel.ISupportInitialize)DelayNumericUpDown).BeginInit();
             SuspendLayout();
@@ -78,10 +81,10 @@
             // 
             // ServerTextBox
             // 
-            ServerTextBox.Location = new Point(122, 6);
+            ServerTextBox.Location = new Point(133, 6);
             ServerTextBox.Name = "ServerTextBox";
             ServerTextBox.PlaceholderText = "e.g. smtp.contosco.com";
-            ServerTextBox.Size = new Size(568, 23);
+            ServerTextBox.Size = new Size(557, 23);
             ServerTextBox.TabIndex = 3;
             // 
             // label1
@@ -95,7 +98,7 @@
             // 
             // PortNumericUpDown
             // 
-            PortNumericUpDown.Location = new Point(122, 35);
+            PortNumericUpDown.Location = new Point(133, 35);
             PortNumericUpDown.Maximum = new decimal(new int[] { 65535, 0, 0, 0 });
             PortNumericUpDown.Name = "PortNumericUpDown";
             PortNumericUpDown.Size = new Size(120, 23);
@@ -103,10 +106,10 @@
             // 
             // UserTextBox
             // 
-            UserTextBox.Location = new Point(122, 64);
+            UserTextBox.Location = new Point(133, 64);
             UserTextBox.Name = "UserTextBox";
             UserTextBox.PlaceholderText = "e.g. User";
-            UserTextBox.Size = new Size(568, 23);
+            UserTextBox.Size = new Size(557, 23);
             UserTextBox.TabIndex = 7;
             // 
             // UserLabel
@@ -120,9 +123,9 @@
             // 
             // PasswordTextBox
             // 
-            PasswordTextBox.Location = new Point(122, 93);
+            PasswordTextBox.Location = new Point(133, 93);
             PasswordTextBox.Name = "PasswordTextBox";
-            PasswordTextBox.Size = new Size(568, 23);
+            PasswordTextBox.Size = new Size(557, 23);
             PasswordTextBox.TabIndex = 9;
             PasswordTextBox.UseSystemPasswordChar = true;
             // 
@@ -138,7 +141,7 @@
             // UseSslCheckBox
             // 
             UseSslCheckBox.AutoSize = true;
-            UseSslCheckBox.Location = new Point(122, 151);
+            UseSslCheckBox.Location = new Point(139, 180);
             UseSslCheckBox.Name = "UseSslCheckBox";
             UseSslCheckBox.Size = new Size(66, 19);
             UseSslCheckBox.TabIndex = 10;
@@ -147,7 +150,7 @@
             // 
             // DelayNumericUpDown
             // 
-            DelayNumericUpDown.Location = new Point(122, 122);
+            DelayNumericUpDown.Location = new Point(133, 122);
             DelayNumericUpDown.Maximum = new decimal(new int[] { 65535, 0, 0, 0 });
             DelayNumericUpDown.Name = "DelayNumericUpDown";
             DelayNumericUpDown.Size = new Size(124, 23);
@@ -156,11 +159,39 @@
             // DelayLabel
             // 
             DelayLabel.AutoSize = true;
-            DelayLabel.Location = new Point(5, 124);
+            DelayLabel.Location = new Point(12, 124);
             DelayLabel.Name = "DelayLabel";
             DelayLabel.Size = new Size(115, 15);
             DelayLabel.TabIndex = 11;
             DelayLabel.Text = "Delay Between Mails";
+            // 
+            // RequiresAuthenticationCheckBox
+            // 
+            RequiresAuthenticationCheckBox.AutoSize = true;
+            RequiresAuthenticationCheckBox.Location = new Point(211, 180);
+            RequiresAuthenticationCheckBox.Name = "RequiresAuthenticationCheckBox";
+            RequiresAuthenticationCheckBox.Size = new Size(153, 19);
+            RequiresAuthenticationCheckBox.TabIndex = 13;
+            RequiresAuthenticationCheckBox.Text = "Requires Authentication";
+            RequiresAuthenticationCheckBox.UseVisualStyleBackColor = true;
+            // 
+            // SocketOptionsLabel
+            // 
+            SocketOptionsLabel.AutoSize = true;
+            SocketOptionsLabel.Location = new Point(12, 154);
+            SocketOptionsLabel.Name = "SocketOptionsLabel";
+            SocketOptionsLabel.Size = new Size(87, 15);
+            SocketOptionsLabel.TabIndex = 15;
+            SocketOptionsLabel.Text = "Socket Options";
+            // 
+            // SocketOptionsComboBox
+            // 
+            SocketOptionsComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+            SocketOptionsComboBox.FormattingEnabled = true;
+            SocketOptionsComboBox.Location = new Point(133, 151);
+            SocketOptionsComboBox.Name = "SocketOptionsComboBox";
+            SocketOptionsComboBox.Size = new Size(557, 23);
+            SocketOptionsComboBox.TabIndex = 16;
             // 
             // SettingsForm
             // 
@@ -168,6 +199,9 @@
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(702, 384);
+            Controls.Add(SocketOptionsComboBox);
+            Controls.Add(SocketOptionsLabel);
+            Controls.Add(RequiresAuthenticationCheckBox);
             Controls.Add(DelayNumericUpDown);
             Controls.Add(DelayLabel);
             Controls.Add(UseSslCheckBox);
@@ -209,5 +243,8 @@
         public CheckBox UseSslCheckBox;
         public NumericUpDown DelayNumericUpDown;
         private Label DelayLabel;
+        public CheckBox RequiresAuthenticationCheckBox;
+        private Label SocketOptionsLabel;
+        public ComboBox SocketOptionsComboBox;
     }
 }

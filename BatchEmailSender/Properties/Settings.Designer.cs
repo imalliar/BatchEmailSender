@@ -94,5 +94,29 @@ namespace BatchEmailSender.Properties {
                 this["Delay"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int SocketOptions {
+            get {
+                return ((int)(this["SocketOptions"]));
+            }
+            set {
+                this["SocketOptions"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RequiresAuthentication {
+            get {
+                return ((bool)(this["RequiresAuthentication"]));
+            }
+            set {
+                this["RequiresAuthentication"] = value;
+            }
+        }
     }
 }
