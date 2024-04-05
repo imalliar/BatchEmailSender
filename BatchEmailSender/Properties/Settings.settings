@@ -6,7 +6,7 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="Port" Type="System.Int32" Scope="User">
-      <Value Profile="(Default)">0</Value>
+      <Value Profile="(Default)">25</Value>
     </Setting>
     <Setting Name="User" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
@@ -16,6 +16,9 @@
     </Setting>
     <Setting Name="UseSsl" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="Delay" Type="System.Int32" Scope="User">
+      <Value Profile="(Default)">0</Value>
     </Setting>
   </Settings>
 </SettingsFile>

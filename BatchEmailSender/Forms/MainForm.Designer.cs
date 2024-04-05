@@ -1,4 +1,4 @@
-﻿namespace BatchEmailSender
+﻿namespace BatchEmailSender.Forms
 {
     partial class MainForm
     {
@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             MainToolStrip = new ToolStrip();
             SettingsToolStripButton = new ToolStripButton();
@@ -36,8 +35,10 @@
             SendMailsToolStripButton = new ToolStripButton();
             MainTabControl = new TabControl();
             EmailTabPage = new TabPage();
+            BodyHtmlEditor = new TextBox();
+            FromNameTextBox = new TextBox();
+            FromNameLabel = new Label();
             ToComboBox = new ComboBox();
-            BodyHtmlEditor = new Zoople.HTMLEditControl();
             BrowseAttachmentButton = new Button();
             AttachmentTextBox = new TextBox();
             AttachLabel = new Label();
@@ -53,8 +54,7 @@
             ErrorsDataGridView = new DataGridView();
             ExcelOpenFileDialog = new OpenFileDialog();
             AttachmentOpenFileDialog = new OpenFileDialog();
-            textBox1 = new TextBox();
-            FromNameLabel = new Label();
+            SenderBackgroundWorker = new System.ComponentModel.BackgroundWorker();
             MainToolStrip.SuspendLayout();
             MainTabControl.SuspendLayout();
             EmailTabPage.SuspendLayout();
@@ -114,14 +114,14 @@
             MainTabControl.Name = "MainTabControl";
             MainTabControl.SelectedIndex = 0;
             MainTabControl.Size = new Size(1076, 482);
-            MainTabControl.TabIndex = 1;
+            MainTabControl.TabIndex = 0;
             // 
             // EmailTabPage
             // 
-            EmailTabPage.Controls.Add(textBox1);
+            EmailTabPage.Controls.Add(BodyHtmlEditor);
+            EmailTabPage.Controls.Add(FromNameTextBox);
             EmailTabPage.Controls.Add(FromNameLabel);
             EmailTabPage.Controls.Add(ToComboBox);
-            EmailTabPage.Controls.Add(BodyHtmlEditor);
             EmailTabPage.Controls.Add(BrowseAttachmentButton);
             EmailTabPage.Controls.Add(AttachmentTextBox);
             EmailTabPage.Controls.Add(AttachLabel);
@@ -139,6 +139,34 @@
             EmailTabPage.Text = "Email";
             EmailTabPage.UseVisualStyleBackColor = true;
             // 
+            // BodyHtmlEditor
+            // 
+            BodyHtmlEditor.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            BodyHtmlEditor.Location = new Point(8, 162);
+            BodyHtmlEditor.Multiline = true;
+            BodyHtmlEditor.Name = "BodyHtmlEditor";
+            BodyHtmlEditor.Size = new Size(1054, 286);
+            BodyHtmlEditor.TabIndex = 12;
+            // 
+            // FromNameTextBox
+            // 
+            FromNameTextBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            FromNameTextBox.Location = new Point(501, 48);
+            FromNameTextBox.Margin = new Padding(4, 3, 4, 3);
+            FromNameTextBox.Name = "FromNameTextBox";
+            FromNameTextBox.Size = new Size(557, 23);
+            FromNameTextBox.TabIndex = 5;
+            // 
+            // FromNameLabel
+            // 
+            FromNameLabel.AutoSize = true;
+            FromNameLabel.Location = new Point(423, 51);
+            FromNameLabel.Margin = new Padding(4, 0, 4, 0);
+            FromNameLabel.Name = "FromNameLabel";
+            FromNameLabel.Size = new Size(70, 15);
+            FromNameLabel.TabIndex = 4;
+            FromNameLabel.Text = "From Name";
+            // 
             // ToComboBox
             // 
             ToComboBox.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
@@ -147,35 +175,7 @@
             ToComboBox.Location = new Point(58, 77);
             ToComboBox.Name = "ToComboBox";
             ToComboBox.Size = new Size(1000, 23);
-            ToComboBox.TabIndex = 25;
-            // 
-            // BodyHtmlEditor
-            // 
-            BodyHtmlEditor.AcceptsReturn = true;
-            BodyHtmlEditor.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            BodyHtmlEditor.AutoSize = true;
-            BodyHtmlEditor.BaseURL = null;
-            BodyHtmlEditor.CleanMSWordHTMLOnPaste = true;
-            BodyHtmlEditor.CSSText = null;
-            BodyHtmlEditor.DocumentHTML = null;
-            BodyHtmlEditor.EnableInlineSpelling = false;
-            BodyHtmlEditor.FontSizesList = null;
-            BodyHtmlEditor.FontsList = null;
-            BodyHtmlEditor.HiddenButtons = null;
-            BodyHtmlEditor.ImageStorageLocation = null;
-            BodyHtmlEditor.InCodeView = false;
-            BodyHtmlEditor.IndentAmount = 2;
-            BodyHtmlEditor.IndentsUseBlockuote = false;
-            BodyHtmlEditor.LanguageFile = null;
-            BodyHtmlEditor.LicenceActivationKey = null;
-            BodyHtmlEditor.LicenceKey = null;
-            BodyHtmlEditor.LicenceKeyInlineSpelling = null;
-            BodyHtmlEditor.Location = new Point(11, 162);
-            BodyHtmlEditor.Name = "BodyHtmlEditor";
-            BodyHtmlEditor.Size = new Size(1049, 284);
-            BodyHtmlEditor.TabIndex = 24;
-            BodyHtmlEditor.ToolstripImageScalingSize = new Size(16, 16);
-            BodyHtmlEditor.UseParagraphAsDefault = true;
+            ToComboBox.TabIndex = 7;
             // 
             // BrowseAttachmentButton
             // 
@@ -184,7 +184,7 @@
             BrowseAttachmentButton.Margin = new Padding(4, 3, 4, 3);
             BrowseAttachmentButton.Name = "BrowseAttachmentButton";
             BrowseAttachmentButton.Size = new Size(40, 27);
-            BrowseAttachmentButton.TabIndex = 22;
+            BrowseAttachmentButton.TabIndex = 10;
             BrowseAttachmentButton.Text = "...";
             BrowseAttachmentButton.UseVisualStyleBackColor = true;
             BrowseAttachmentButton.Click += BrowseAttachmentButton_Click;
@@ -196,7 +196,7 @@
             AttachmentTextBox.Margin = new Padding(4, 3, 4, 3);
             AttachmentTextBox.Name = "AttachmentTextBox";
             AttachmentTextBox.Size = new Size(956, 23);
-            AttachmentTextBox.TabIndex = 21;
+            AttachmentTextBox.TabIndex = 9;
             // 
             // AttachLabel
             // 
@@ -205,7 +205,7 @@
             AttachLabel.Margin = new Padding(4, 0, 4, 0);
             AttachLabel.Name = "AttachLabel";
             AttachLabel.Size = new Size(42, 15);
-            AttachLabel.TabIndex = 20;
+            AttachLabel.TabIndex = 8;
             AttachLabel.Text = "Attach";
             // 
             // ToLabel
@@ -215,7 +215,7 @@
             ToLabel.Margin = new Padding(4, 0, 4, 0);
             ToLabel.Name = "ToLabel";
             ToLabel.Size = new Size(19, 15);
-            ToLabel.TabIndex = 18;
+            ToLabel.TabIndex = 6;
             ToLabel.Text = "To";
             // 
             // FromTextBox
@@ -224,7 +224,7 @@
             FromTextBox.Margin = new Padding(4, 3, 4, 3);
             FromTextBox.Name = "FromTextBox";
             FromTextBox.Size = new Size(355, 23);
-            FromTextBox.TabIndex = 17;
+            FromTextBox.TabIndex = 3;
             // 
             // FromLabel
             // 
@@ -233,7 +233,7 @@
             FromLabel.Margin = new Padding(4, 0, 4, 0);
             FromLabel.Name = "FromLabel";
             FromLabel.Size = new Size(35, 15);
-            FromLabel.TabIndex = 16;
+            FromLabel.TabIndex = 2;
             FromLabel.Text = "From";
             // 
             // TextLabel
@@ -243,7 +243,7 @@
             TextLabel.Margin = new Padding(4, 0, 4, 0);
             TextLabel.Name = "TextLabel";
             TextLabel.Size = new Size(34, 15);
-            TextLabel.TabIndex = 14;
+            TextLabel.TabIndex = 11;
             TextLabel.Text = "Body";
             // 
             // SubjectTextBox
@@ -253,7 +253,7 @@
             SubjectTextBox.Margin = new Padding(4, 3, 4, 3);
             SubjectTextBox.Name = "SubjectTextBox";
             SubjectTextBox.Size = new Size(1000, 23);
-            SubjectTextBox.TabIndex = 13;
+            SubjectTextBox.TabIndex = 1;
             // 
             // SubjectLlabel
             // 
@@ -262,7 +262,7 @@
             SubjectLlabel.Margin = new Padding(4, 0, 4, 0);
             SubjectLlabel.Name = "SubjectLlabel";
             SubjectLlabel.Size = new Size(46, 15);
-            SubjectLlabel.TabIndex = 12;
+            SubjectLlabel.TabIndex = 0;
             SubjectLlabel.Text = "Subject";
             // 
             // ExcelTabPage
@@ -301,6 +301,8 @@
             // 
             // ErrorsDataGridView
             // 
+            ErrorsDataGridView.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            ErrorsDataGridView.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.AllCells;
             ErrorsDataGridView.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             ErrorsDataGridView.Dock = DockStyle.Fill;
             ErrorsDataGridView.Location = new Point(3, 3);
@@ -316,24 +318,13 @@
             // 
             AttachmentOpenFileDialog.FileName = "openFileDialog1";
             // 
-            // textBox1
+            // SenderBackgroundWorker
             // 
-            textBox1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            textBox1.Location = new Point(501, 48);
-            textBox1.Margin = new Padding(4, 3, 4, 3);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(557, 23);
-            textBox1.TabIndex = 27;
-            // 
-            // FromNameLabel
-            // 
-            FromNameLabel.AutoSize = true;
-            FromNameLabel.Location = new Point(423, 51);
-            FromNameLabel.Margin = new Padding(4, 0, 4, 0);
-            FromNameLabel.Name = "FromNameLabel";
-            FromNameLabel.Size = new Size(70, 15);
-            FromNameLabel.TabIndex = 26;
-            FromNameLabel.Text = "From Name";
+            SenderBackgroundWorker.WorkerReportsProgress = true;
+            SenderBackgroundWorker.WorkerSupportsCancellation = true;
+            SenderBackgroundWorker.DoWork += SenderBackgroundWorker_DoWork;
+            SenderBackgroundWorker.ProgressChanged += SenderBackgroundWorker_ProgressChanged;
+            SenderBackgroundWorker.RunWorkerCompleted += SenderBackgroundWorker_RunWorkerCompleted;
             // 
             // MainForm
             // 
@@ -374,7 +365,6 @@
         private Label TextLabel;
         private TextBox SubjectTextBox;
         private Label SubjectLlabel;
-        private Zoople.HTMLEditControl BodyHtmlEditor;
         private ToolStripButton ExcelToolStripButton;
         private OpenFileDialog ExcelOpenFileDialog;
         private DataGridView ExcelDataGridView;
@@ -383,7 +373,9 @@
         private ToolStripButton SendMailsToolStripButton;
         private TabPage ErrosTabPage;
         private DataGridView ErrorsDataGridView;
-        private TextBox textBox1;
+        private TextBox FromNameTextBox;
         private Label FromNameLabel;
+        private System.ComponentModel.BackgroundWorker SenderBackgroundWorker;
+        private TextBox BodyHtmlEditor;
     }
 }

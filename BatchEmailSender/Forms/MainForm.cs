@@ -1,26 +1,35 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
+using System.Net.Mail;
+using System.Reflection.Metadata.Ecma335;
+using BatchEmailSender.Extensions;
 using BatchEmailSender.Models;
 using BatchEmailSender.Properties;
 using BatchEmailSender.Utils;
 using FluentEmail.Core;
+using FluentEmail.Liquid;
+using FluentEmail.MailKitSmtp;
+using FluentEmail.Smtp;
+using MailKit.Security;
+using Microsoft.Extensions.Options;
 using OfficeOpenXml;
 
-namespace BatchEmailSender;
+namespace BatchEmailSender.Forms;
 
 public partial class MainForm : Form
 {
     private readonly Dictionary<string, int> _columns = new();
     private readonly List<ColumnsModel> _columnsModel = new();
     private DataTable _excelData = new();
-    private readonly List<ErrorModel> _errors = new();
+    private List<ErrorModel> _errors = new();
+    private WaitForm? _waitForm = null;
+    private string? _to;
+    private string? _subject;
+    private string? _template;
+    private int _delay;
+    private string _from;
+    private string _fromName;
+
 
     public MainForm()
     {
@@ -36,6 +45,7 @@ public partial class MainForm : Form
         settings.UseSslCheckBox.Checked = Settings.Default.UseSsl;
         settings.UserTextBox.Text = Settings.Default.User;
         settings.PasswordTextBox.Text = Settings.Default.Password;
+        settings.DelayNumericUpDown.Value = Settings.Default.Delay;
 
         if (settings.ShowDialog() == DialogResult.OK)
         {
@@ -44,6 +54,7 @@ public partial class MainForm : Form
             Settings.Default.UseSsl = settings.UseSslCheckBox.Checked;
             Settings.Default.User = settings.UserTextBox.Text;
             Settings.Default.Password = settings.PasswordTextBox.Text;
+            Settings.Default.Delay = (int)settings.DelayNumericUpDown.Value;
             Settings.Default.Save();
         }
     }
@@ -111,17 +122,92 @@ public partial class MainForm : Form
             MessageBox.Show("From is not a valid email address", "Send Mail Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             return;
         }
-
-        string body = BodyHtmlEditor.Text;
-
-        foreach (ColumnsModel row in _columnsModel)
+        if (string.IsNullOrEmpty(ToComboBox.Text))
         {
-            await new Email()
-                .To("test@test.test")
-                .Subject("Mailgun example")
-                .Body("Email body")
-                .Tag("tagname") //the Mailgun sender supports tags
-                .SendAsync();
+            MessageBox.Show("You should load the Excel file first and select the 'To' column", "Send Mail Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return;
         }
+        
+        _waitForm = new WaitForm(SenderBackgroundWorker, _excelData.Rows.Count);
+
+        _to = ToComboBox.Text;
+        _subject = SubjectTextBox.Text;
+        _template = BodyHtmlEditor.Text;
+        _delay = Settings.Default.Delay;
+        _from = FromTextBox.Text;
+        _fromName = FromNameTextBox.Text;
+
+        SenderBackgroundWorker.RunWorkerAsync();
+        _waitForm.ShowDialog();
+        ErrorsDataGridView.DataSource = _errors;
+    }
+
+    private void SenderBackgroundWorker_RunWorkerCompleted(object? sender, RunWorkerCompletedEventArgs e)
+    {
+        _waitForm?.Close();
+    }
+
+    private void SenderBackgroundWorker_DoWork(object? sender, DoWorkEventArgs e)
+    {
+        Email.DefaultSender = new MailKitSender(new SmtpClientOptions
+        {
+            Password = Settings.Default.Password,
+            Port = Settings.Default.Port,
+            Server = Settings.Default.Server,
+            User = Settings.Default.User,
+            UseSsl = Settings.Default.UseSsl,
+            //RequiresAuthentication = true,
+            SocketOptions = SecureSocketOptions.StartTlsWhenAvailable
+        });
+        Email.From(_from, _fromName);
+
+        var options = new LiquidRendererOptions();
+        Email.DefaultRenderer = new LiquidRenderer(Options.Create(options));
+        
+        IEnumerable<dynamic> rows = _excelData.ToDynamic();
+        int progress = 0;
+        _errors = new List<ErrorModel>();
+        string? currentTo=null;
+        
+        foreach (var currentRow in rows)
+        {
+            var row = currentRow as IDictionary<string, object?>;
+            if (row == null) continue;
+            try
+            {
+                currentTo = row[_to].ToString();
+                if (string.IsNullOrEmpty(currentTo)) continue;
+
+                var email = new Email()
+                    .SetFrom(_from, _fromName)
+                    .To(currentTo)
+                    .Subject(_subject)
+                    .Body("Test body");
+                    //.UsingTemplate(_template, row);
+
+                var response = email.Send();
+
+                
+                    
+                Task.Delay(_delay * 1000);
+                SenderBackgroundWorker.ReportProgress(++progress);
+                if (SenderBackgroundWorker.CancellationPending) break;
+            }
+            catch (Exception ex)
+            {
+                _errors.Add(new ErrorModel
+                {
+                    Email = currentTo,
+                    Error = ex.Message
+                });
+            }
+        }
+
+    }
+
+    private void SenderBackgroundWorker_ProgressChanged(object? sender, ProgressChangedEventArgs e)
+    {
+        if (_waitForm != null) 
+            _waitForm.ProgressBarWait.Value = e.ProgressPercentage;
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace BatchEmailSender
+﻿namespace BatchEmailSender.Forms
 {
     partial class SettingsForm
     {
@@ -39,7 +39,10 @@
             PasswordTextBox = new TextBox();
             PasswordLabel = new Label();
             UseSslCheckBox = new CheckBox();
+            DelayNumericUpDown = new NumericUpDown();
+            DelayLabel = new Label();
             ((System.ComponentModel.ISupportInitialize)PortNumericUpDown).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)DelayNumericUpDown).BeginInit();
             SuspendLayout();
             // 
             // CancelButton
@@ -75,16 +78,16 @@
             // 
             // ServerTextBox
             // 
-            ServerTextBox.Location = new Point(90, 6);
+            ServerTextBox.Location = new Point(122, 6);
             ServerTextBox.Name = "ServerTextBox";
             ServerTextBox.PlaceholderText = "e.g. smtp.contosco.com";
-            ServerTextBox.Size = new Size(600, 23);
+            ServerTextBox.Size = new Size(568, 23);
             ServerTextBox.TabIndex = 3;
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(22, 37);
+            label1.Location = new Point(12, 37);
             label1.Name = "label1";
             label1.Size = new Size(62, 15);
             label1.TabIndex = 4;
@@ -92,7 +95,7 @@
             // 
             // PortNumericUpDown
             // 
-            PortNumericUpDown.Location = new Point(90, 35);
+            PortNumericUpDown.Location = new Point(122, 35);
             PortNumericUpDown.Maximum = new decimal(new int[] { 65535, 0, 0, 0 });
             PortNumericUpDown.Name = "PortNumericUpDown";
             PortNumericUpDown.Size = new Size(120, 23);
@@ -100,16 +103,16 @@
             // 
             // UserTextBox
             // 
-            UserTextBox.Location = new Point(90, 64);
+            UserTextBox.Location = new Point(122, 64);
             UserTextBox.Name = "UserTextBox";
             UserTextBox.PlaceholderText = "e.g. User";
-            UserTextBox.Size = new Size(600, 23);
+            UserTextBox.Size = new Size(568, 23);
             UserTextBox.TabIndex = 7;
             // 
             // UserLabel
             // 
             UserLabel.AutoSize = true;
-            UserLabel.Location = new Point(49, 67);
+            UserLabel.Location = new Point(12, 67);
             UserLabel.Name = "UserLabel";
             UserLabel.Size = new Size(30, 15);
             UserLabel.TabIndex = 6;
@@ -117,9 +120,9 @@
             // 
             // PasswordTextBox
             // 
-            PasswordTextBox.Location = new Point(90, 93);
+            PasswordTextBox.Location = new Point(122, 93);
             PasswordTextBox.Name = "PasswordTextBox";
-            PasswordTextBox.Size = new Size(600, 23);
+            PasswordTextBox.Size = new Size(568, 23);
             PasswordTextBox.TabIndex = 9;
             PasswordTextBox.UseSystemPasswordChar = true;
             // 
@@ -135,20 +138,38 @@
             // UseSslCheckBox
             // 
             UseSslCheckBox.AutoSize = true;
-            UseSslCheckBox.Location = new Point(90, 122);
+            UseSslCheckBox.Location = new Point(122, 151);
             UseSslCheckBox.Name = "UseSslCheckBox";
             UseSslCheckBox.Size = new Size(66, 19);
             UseSslCheckBox.TabIndex = 10;
             UseSslCheckBox.Text = "Use SSL";
             UseSslCheckBox.UseVisualStyleBackColor = true;
             // 
+            // DelayNumericUpDown
+            // 
+            DelayNumericUpDown.Location = new Point(122, 122);
+            DelayNumericUpDown.Maximum = new decimal(new int[] { 65535, 0, 0, 0 });
+            DelayNumericUpDown.Name = "DelayNumericUpDown";
+            DelayNumericUpDown.Size = new Size(124, 23);
+            DelayNumericUpDown.TabIndex = 12;
+            // 
+            // DelayLabel
+            // 
+            DelayLabel.AutoSize = true;
+            DelayLabel.Location = new Point(5, 124);
+            DelayLabel.Name = "DelayLabel";
+            DelayLabel.Size = new Size(115, 15);
+            DelayLabel.TabIndex = 11;
+            DelayLabel.Text = "Delay Between Mails";
+            // 
             // SettingsForm
             // 
             AcceptButton = OkButton;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            CancelButton = CancelButton;
             ClientSize = new Size(702, 384);
+            Controls.Add(DelayNumericUpDown);
+            Controls.Add(DelayLabel);
             Controls.Add(UseSslCheckBox);
             Controls.Add(PasswordTextBox);
             Controls.Add(PasswordLabel);
@@ -168,6 +189,7 @@
             ShowInTaskbar = false;
             Text = "Settings";
             ((System.ComponentModel.ISupportInitialize)PortNumericUpDown).EndInit();
+            ((System.ComponentModel.ISupportInitialize)DelayNumericUpDown).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -185,5 +207,7 @@
         public TextBox UserTextBox;
         public TextBox PasswordTextBox;
         public CheckBox UseSslCheckBox;
+        public NumericUpDown DelayNumericUpDown;
+        private Label DelayLabel;
     }
 }
